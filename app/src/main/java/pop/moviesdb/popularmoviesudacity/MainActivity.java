@@ -5,12 +5,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
+import pop.moviesdb.popularmoviesudacity.models.MostPopularNestedResultResponse;
+import pop.moviesdb.popularmoviesudacity.models.MostPopularResponse;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -35,28 +39,31 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-        setUpRetrofit();
+        setUpNetworking();
 
         apiServices = retrofit.create(MoviesApiServices.class);
 
-        apiServices.getMostPopular(Constants.API_KEY).enqueue(new Callback<Void>() {
+        apiServices.getMostPopular(Constants.API_KEY).enqueue(new Callback<MostPopularResponse>() {
             @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
-                Log.i(TAG, "onResponse mesa");
+            public void onResponse(Call<MostPopularResponse> call, Response<MostPopularResponse> response) {
                 if (response.isSuccessful()) {
-                    Log.i(TAG, "onResponse Success");
+                    showMostPopularMovies(Arrays.asList(response.body().getResults()));
                 }
             }
 
             @Override
-            public void onFailure(Call<Void> call, Throwable t) {
+            public void onFailure(Call<MostPopularResponse> call, Throwable t) {
 
             }
         });
 
     }
 
-    private void setUpRetrofit() {
+    private void showMostPopularMovies(List<MostPopularNestedResultResponse> mostPopularList) {
+        Log.i(TAG, "showMostPopularMovies size == " + mostPopularList.size());
+    }
+
+    private void setUpNetworking() {
         HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
         interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
 
