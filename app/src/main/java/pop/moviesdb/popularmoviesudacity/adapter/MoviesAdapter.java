@@ -2,7 +2,6 @@ package pop.moviesdb.popularmoviesudacity.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,7 +53,6 @@ public class MoviesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         moviesViewHolder.tvTitle.setText(dataset.get(position).getTitle());
 
         String posterPath = createUrlForPoster(dataset.get(position).getPoster_path());
-        Log.i(TAG, "onBindViewHolder posterPath == " + posterPath);
 
         Picasso.with(context)
                 .load(posterPath)
@@ -71,6 +69,15 @@ public class MoviesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
      */
     private String createUrlForPoster(String posterPath) {
         return Constants.BASE_IMAGE_URL + Constants.URL_PART_IMAGE_SIZE + posterPath;
+    }
+
+    /**
+     * Adds list of movies to dataset
+     * @param movies data to add
+     */
+    public void addAll(List<MostPopularNestedResultResponse> movies) {
+        dataset.addAll(movies);
+        notifyDataSetChanged();
     }
 
     @Override

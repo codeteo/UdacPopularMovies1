@@ -2,6 +2,8 @@ package pop.moviesdb.popularmoviesudacity;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 
@@ -13,6 +15,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
+import pop.moviesdb.popularmoviesudacity.adapter.MoviesAdapter;
 import pop.moviesdb.popularmoviesudacity.models.MostPopularNestedResultResponse;
 import pop.moviesdb.popularmoviesudacity.models.MostPopularResponse;
 import retrofit2.Call;
@@ -30,13 +33,16 @@ public class MainActivity extends AppCompatActivity {
 
     OkHttpClient okHttpClient;
     Retrofit retrofit;
-
     MoviesApiServices apiServices;
+
+    MoviesAdapter moviesAdapter;
+    GridLayoutManager gridLayoutManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ButterKnife.setDebug(true);
         ButterKnife.bind(this);
 
         setUpNetworking();
@@ -57,10 +63,21 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        moviesAdapter = new MoviesAdapter(this);
+
+        gridLayoutManager = new GridLayoutManager(this, 2, LinearLayoutManager.VERTICAL, false);
+        gridLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+
+        if (rvMoviesList != null) {
+            rvMoviesList.setLayoutManager(gridLayoutManager);
+            rvMoviesList.setAdapter(moviesAdapter);
+        }
+
     }
 
     private void showMostPopularMovies(List<MostPopularNestedResultResponse> mostPopularList) {
         Log.i(TAG, "showMostPopularMovies size == " + mostPopularList.size());
+        moviesAdapter.addAll(mostPopularList);
     }
 
     private void setUpNetworking() {
