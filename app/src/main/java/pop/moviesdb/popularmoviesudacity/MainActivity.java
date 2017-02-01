@@ -5,7 +5,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import java.util.Arrays;
 import java.util.List;
@@ -30,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
     private static final long CONNECTION_TIMEOUT = 15;
 
     @BindView(R.id.rv_main_movies_list) RecyclerView rvMoviesList;
+    @BindView(R.id.toolbar) Toolbar toolbar;
 
     OkHttpClient okHttpClient;
     Retrofit retrofit;
@@ -45,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
         ButterKnife.setDebug(true);
         ButterKnife.bind(this);
 
+        setSupportActionBar(toolbar);
         setUpNetworking();
 
         apiServices = retrofit.create(MoviesApiServices.class);
@@ -73,6 +78,26 @@ public class MainActivity extends AppCompatActivity {
             rvMoviesList.setAdapter(moviesAdapter);
         }
 
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_most_popular:
+                Log.i(TAG, "onOptionsItemSelected MEsa sto MostPopular");
+                return true;
+            case R.id.action_top_rated:
+                Log.i(TAG, "onOptionsItemSelected MEsa sto TopRated");
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     private void showMostPopularMovies(List<MostPopularNestedResultResponse> mostPopularList) {
