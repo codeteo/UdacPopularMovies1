@@ -1,7 +1,7 @@
 package pop.moviesdb.popularmoviesudacity;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -9,6 +9,8 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,6 +22,7 @@ import butterknife.ButterKnife;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import pop.moviesdb.popularmoviesudacity.adapter.MoviesAdapter;
+import pop.moviesdb.popularmoviesudacity.events.OpenDetailsActivityEvent;
 import pop.moviesdb.popularmoviesudacity.models.MovieMainModel;
 import pop.moviesdb.popularmoviesudacity.models.MoviesNestedItemResultsResponse;
 import pop.moviesdb.popularmoviesudacity.models.MoviesResponse;
@@ -29,7 +32,17 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class MainActivity extends AppCompatActivity {
+/**
+ * MainActivity is the main screen of the app with a grid that displays
+ * either the "Most Popular" or the "Top Rated" movies, fetched with a network request
+ * from <a href="https://www.themoviedb.org/">www.themoviedb.org</a> web site.
+ * On toolbar there's an overflow menu (three dots) where user can select either <i>"most popular"</i>
+ * or <i>"top rated"</i> movies.
+ * Data are saved to an ArrayList of Parcelable objects with the use of Google's AutoValue library
+ * and AutoValue extensions that help to easily create immutable objects that implement Parcelable interface
+ * without the boileplate.
+ */
+public class MainActivity extends BaseActivity {
 
     private static final String TAG = "MAIN-ACTIVITY";
     private static final String MOST_POPULAR_KEY = "most_popular";
@@ -141,6 +154,17 @@ public class MainActivity extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    /**
+     * When a click happens on a Grid's movie item we start {@link DetailsActivity}
+     * and we send through Extras an object with detail info about the movie clicked.
+     */
+    @Subscribe
+    public void onOpenDetailsActivityEventReceived(OpenDetailsActivityEvent event) {
+        Intent intent = new Intent(this, DetailsActivity.class);
+        intent.putExtra("movie", event.getMovieModel());
+        startActivity(intent);
     }
 
     private void executeTopRatedService() {

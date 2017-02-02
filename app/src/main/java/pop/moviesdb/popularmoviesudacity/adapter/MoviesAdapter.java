@@ -2,10 +2,12 @@ package pop.moviesdb.popularmoviesudacity.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
@@ -17,6 +19,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import pop.moviesdb.popularmoviesudacity.Constants;
 import pop.moviesdb.popularmoviesudacity.R;
+import pop.moviesdb.popularmoviesudacity.events.BusProvider;
+import pop.moviesdb.popularmoviesudacity.events.OpenDetailsActivityEvent;
 import pop.moviesdb.popularmoviesudacity.models.MovieMainModel;
 
 /**
@@ -47,7 +51,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
         final MoviesViewHolder moviesViewHolder = (MoviesViewHolder) holder;
 
         moviesViewHolder.tvTitle.setText(dataset.get(position).title());
@@ -59,6 +63,14 @@ public class MoviesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 .centerCrop()
                 .fit()
                 .into(moviesViewHolder.ivImage);
+
+        moviesViewHolder.rlItemContainer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.i(TAG, "onClick mesa sto Click");
+                BusProvider.getInstance().post(new OpenDetailsActivityEvent(dataset.get(position)));
+            }
+        });
 
     }
 
@@ -88,6 +100,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     class MoviesViewHolder extends RecyclerView.ViewHolder {
 
+        @BindView(R.id.rl_item_movie_container) RelativeLayout rlItemContainer;
         @BindView(R.id.iv_item_movie_image) ImageView ivImage;
         @BindView(R.id.tv_item_movie_title) TextView tvTitle;
 
