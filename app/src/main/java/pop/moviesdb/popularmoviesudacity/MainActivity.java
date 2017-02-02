@@ -20,9 +20,9 @@ import butterknife.ButterKnife;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import pop.moviesdb.popularmoviesudacity.adapter.MoviesAdapter;
+import pop.moviesdb.popularmoviesudacity.models.MovieMainModel;
 import pop.moviesdb.popularmoviesudacity.models.MoviesNestedItemResultsResponse;
 import pop.moviesdb.popularmoviesudacity.models.MoviesResponse;
-import pop.moviesdb.popularmoviesudacity.models.MovieMainModel;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -31,7 +31,10 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static final String TAG = "MAIN-ACTIVITY";
+    private static final String TAG = "MAIN-ACTIVITY";
+    private static final String MOST_POPULAR_KEY = "most_popular";
+    private static final String TOP_RATED_KEY = "top_rated";
+    private static final String CURRENTLY_DISPLAYED_KEY = "currently_displayed";
     private static final long CONNECTION_TIMEOUT = 15;
 
     @BindView(R.id.rv_main_movies_list) RecyclerView rvMoviesList;
@@ -44,34 +47,20 @@ public class MainActivity extends AppCompatActivity {
     MoviesAdapter moviesAdapter;
     GridLayoutManager gridLayoutManager;
 
-    List<MovieMainModel> mostPopularArrayList = new ArrayList<>();
-    List<MovieMainModel> topRatedArrayList = new ArrayList<>();
+    ArrayList<MovieMainModel> mostPopularArrayList = new ArrayList<>();
+    ArrayList<MovieMainModel> topRatedArrayList = new ArrayList<>();
+
+    // keeps state of currently displayed data, initially we display "Most Popular"
+    private boolean isMostPopularDisplayed = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        ButterKnife.setDebug(true);
         ButterKnife.bind(this);
 
         setSupportActionBar(toolbar);
         setUpNetworking();
-
-        apiServices = retrofit.create(MoviesApiServices.class);
-
-        apiServices.getMostPopular(Constants.API_KEY).enqueue(new Callback<MoviesResponse>() {
-            @Override
-            public void onResponse(Call<MoviesResponse> call, Response<MoviesResponse> response) {
-                if (response.isSuccessful()) {
-                    showMostPopularMovies(Arrays.asList(response.body().getResults()));
-                }
-            }
-
-            @Override
-            public void onFailure(Call<MoviesResponse> call, Throwable t) {
-
-            }
-        });
 
         moviesAdapter = new MoviesAdapter(this);
 
@@ -83,6 +72,47 @@ public class MainActivity extends AppCompatActivity {
             rvMoviesList.setAdapter(moviesAdapter);
         }
 
+        apiServices = retrofit.create(MoviesApiServices.class);
+
+        if (savedInstanceState == null) {
+
+            apiServices.getMostPopular(Constants.API_KEY).enqueue(new Callback<MoviesResponse>() {
+                @Override
+                public void onResponse(Call<MoviesResponse> call, Response<MoviesResponse> response) {
+                    if (response.isSuccessful()) {
+                        showMostPopularMovies(Arrays.asList(response.body().getResults()));
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<MoviesResponse> call, Throwable t) {
+
+                }
+            });
+
+        } else {
+            Log.i(TAG, "onCreate State is NOT NULL");
+            mostPopularArrayList = savedInstanceState.getParcelableArrayList(MOST_POPULAR_KEY);
+            topRatedArrayList = savedInstanceState.getParcelableArrayList(TOP_RATED_KEY);
+
+            isMostPopularDisplayed = savedInstanceState.getBoolean(CURRENTLY_DISPLAYED_KEY);
+
+            // insert mostPopular to Adapter
+            if (isMostPopularDisplayed) {
+                moviesAdapter.addAll(mostPopularArrayList);
+            } else {
+                moviesAdapter.addAll(topRatedArrayList);
+            }
+        }
+
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelableArrayList(MOST_POPULAR_KEY, mostPopularArrayList);
+        outState.putParcelableArrayList(TOP_RATED_KEY, topRatedArrayList);
+        outState.putBoolean(CURRENTLY_DISPLAYED_KEY, isMostPopularDisplayed);
     }
 
     @Override
@@ -98,6 +128,7 @@ public class MainActivity extends AppCompatActivity {
                 if (!mostPopularArrayList.isEmpty()) {
                     moviesAdapter.addAll(mostPopularArrayList);
                 }
+                isMostPopularDisplayed = true;
                 return true;
             case R.id.action_top_rated:
                 if (!topRatedArrayList.isEmpty()) {
@@ -105,6 +136,7 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     executeTopRatedService();
                 }
+                isMostPopularDisplayed = false;
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -128,7 +160,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showMostPopularMovies(List<MoviesNestedItemResultsResponse> mostPopularList) {
-        Log.i(TAG, "showMostPopularMovies size == " + mostPopularList.size());
         for (MoviesNestedItemResultsResponse mostPopularMovie : mostPopularList){
 
             MovieMainModel mostPopularModel = MovieMainModel.builder()
@@ -147,7 +178,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showTopRatedMovies(List<MoviesNestedItemResultsResponse> topRatedList) {
-        Log.i(TAG, "showTopRateMovies size == " + topRatedList.size());
         for (MoviesNestedItemResultsResponse topRatedMovie : topRatedList){
 
             MovieMainModel topRatedModel = MovieMainModel.builder()
