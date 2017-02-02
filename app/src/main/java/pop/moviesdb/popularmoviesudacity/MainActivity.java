@@ -48,6 +48,7 @@ public class MainActivity extends BaseActivity {
     private static final String MOST_POPULAR_KEY = "most_popular";
     private static final String TOP_RATED_KEY = "top_rated";
     private static final String CURRENTLY_DISPLAYED_KEY = "currently_displayed";
+    private static final String INTENT_MOVIE = "movie";
     private static final long CONNECTION_TIMEOUT = 15;
 
     @BindView(R.id.rv_main_movies_list) RecyclerView rvMoviesList;
@@ -163,7 +164,7 @@ public class MainActivity extends BaseActivity {
     @Subscribe
     public void onOpenDetailsActivityEventReceived(OpenDetailsActivityEvent event) {
         Intent intent = new Intent(this, DetailsActivity.class);
-        intent.putExtra("movie", event.getMovieModel());
+        intent.putExtra(INTENT_MOVIE, event.getMovieModel());
         startActivity(intent);
     }
 
