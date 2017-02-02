@@ -13,4 +13,7 @@ public interface MoviesApiServices {
     @GET("movie/popular")
     Call<MostPopularResponse> getMostPopular(@Query("api_key") String apiKey);
 
+    @GET("movie/top_rated")
+    Call<Void> getTopRated(@Query("api_key") String apiKey);
+
 }

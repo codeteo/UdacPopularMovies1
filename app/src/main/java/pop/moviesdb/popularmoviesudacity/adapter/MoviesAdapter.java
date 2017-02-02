@@ -17,7 +17,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import pop.moviesdb.popularmoviesudacity.Constants;
 import pop.moviesdb.popularmoviesudacity.R;
-import pop.moviesdb.popularmoviesudacity.models.MostPopularNestedResultResponse;
+import pop.moviesdb.popularmoviesudacity.models.MovieMainModel;
 
 /**
  * Adapter for RecyclerView in {@link pop.moviesdb.popularmoviesudacity.MainActivity}
@@ -27,7 +27,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     private static final String TAG = "MOVIES-ADAPTER";
 
-    private List<MostPopularNestedResultResponse> dataset;
+    private List<MovieMainModel> dataset;
     private Context context;
 
     public MoviesAdapter(Context context) {
@@ -50,9 +50,9 @@ public class MoviesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         final MoviesViewHolder moviesViewHolder = (MoviesViewHolder) holder;
 
-        moviesViewHolder.tvTitle.setText(dataset.get(position).getTitle());
+        moviesViewHolder.tvTitle.setText(dataset.get(position).title());
 
-        String posterPath = createUrlForPoster(dataset.get(position).getPoster_path());
+        String posterPath = createUrlForPoster(dataset.get(position).posterPath());
 
         Picasso.with(context)
                 .load(posterPath)
@@ -75,7 +75,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
      * Adds list of movies to dataset
      * @param movies data to add
      */
-    public void addAll(List<MostPopularNestedResultResponse> movies) {
+    public void addAll(List<MovieMainModel> movies) {
         dataset.addAll(movies);
         notifyDataSetChanged();
     }

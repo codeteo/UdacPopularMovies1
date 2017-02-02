@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -21,6 +22,7 @@ import okhttp3.logging.HttpLoggingInterceptor;
 import pop.moviesdb.popularmoviesudacity.adapter.MoviesAdapter;
 import pop.moviesdb.popularmoviesudacity.models.MostPopularNestedResultResponse;
 import pop.moviesdb.popularmoviesudacity.models.MostPopularResponse;
+import pop.moviesdb.popularmoviesudacity.models.MovieMainModel;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -41,6 +43,9 @@ public class MainActivity extends AppCompatActivity {
 
     MoviesAdapter moviesAdapter;
     GridLayoutManager gridLayoutManager;
+
+    List<MovieMainModel> mostPopularArrayList = new ArrayList<>();
+    List<MovieMainModel> topRatedArrayList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,15 +99,44 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             case R.id.action_top_rated:
                 Log.i(TAG, "onOptionsItemSelected MEsa sto TopRated");
+                executeTopRatedService();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
+    private void executeTopRatedService() {
+        apiServices.getTopRated(Constants.API_KEY).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                Log.i(TAG, "onResponse SUCCESS");
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+
+            }
+        });
+    }
+
     private void showMostPopularMovies(List<MostPopularNestedResultResponse> mostPopularList) {
         Log.i(TAG, "showMostPopularMovies size == " + mostPopularList.size());
-        moviesAdapter.addAll(mostPopularList);
+        for (MostPopularNestedResultResponse mostPopularMovie : mostPopularList){
+
+            MovieMainModel mostPopularModel = MovieMainModel.builder()
+                    .setTitle(mostPopularMovie.getOriginal_title())
+                    .setOverview(mostPopularMovie.getOverview())
+                    .setPosterPath(mostPopularMovie.getPoster_path())
+                    .setReleaseDate(mostPopularMovie.getRelease_date())
+                    .setVoteAverage(mostPopularMovie.getVote_average())
+                    .build();
+
+            mostPopularArrayList.add(mostPopularModel);
+
+        }
+
+        moviesAdapter.addAll(mostPopularArrayList);
     }
 
     private void setUpNetworking() {
