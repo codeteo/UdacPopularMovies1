@@ -20,8 +20,8 @@ import butterknife.ButterKnife;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import pop.moviesdb.popularmoviesudacity.adapter.MoviesAdapter;
-import pop.moviesdb.popularmoviesudacity.models.MostPopularNestedResultResponse;
-import pop.moviesdb.popularmoviesudacity.models.MostPopularResponse;
+import pop.moviesdb.popularmoviesudacity.models.MoviesNestedItemResultsResponse;
+import pop.moviesdb.popularmoviesudacity.models.MoviesResponse;
 import pop.moviesdb.popularmoviesudacity.models.MovieMainModel;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -59,16 +59,16 @@ public class MainActivity extends AppCompatActivity {
 
         apiServices = retrofit.create(MoviesApiServices.class);
 
-        apiServices.getMostPopular(Constants.API_KEY).enqueue(new Callback<MostPopularResponse>() {
+        apiServices.getMostPopular(Constants.API_KEY).enqueue(new Callback<MoviesResponse>() {
             @Override
-            public void onResponse(Call<MostPopularResponse> call, Response<MostPopularResponse> response) {
+            public void onResponse(Call<MoviesResponse> call, Response<MoviesResponse> response) {
                 if (response.isSuccessful()) {
                     showMostPopularMovies(Arrays.asList(response.body().getResults()));
                 }
             }
 
             @Override
-            public void onFailure(Call<MostPopularResponse> call, Throwable t) {
+            public void onFailure(Call<MoviesResponse> call, Throwable t) {
 
             }
         });
@@ -95,11 +95,16 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_most_popular:
-                Log.i(TAG, "onOptionsItemSelected MEsa sto MostPopular");
+                if (!mostPopularArrayList.isEmpty()) {
+                    moviesAdapter.addAll(mostPopularArrayList);
+                }
                 return true;
             case R.id.action_top_rated:
-                Log.i(TAG, "onOptionsItemSelected MEsa sto TopRated");
-                executeTopRatedService();
+                if (!topRatedArrayList.isEmpty()) {
+                    moviesAdapter.addAll(topRatedArrayList);
+                } else {
+                    executeTopRatedService();
+                }
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -107,22 +112,24 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void executeTopRatedService() {
-        apiServices.getTopRated(Constants.API_KEY).enqueue(new Callback<Void>() {
+        apiServices.getTopRated(Constants.API_KEY).enqueue(new Callback<MoviesResponse>() {
             @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
-                Log.i(TAG, "onResponse SUCCESS");
+            public void onResponse(Call<MoviesResponse> call, Response<MoviesResponse> response) {
+                if (response.isSuccessful()) {
+                    showTopRatedMovies(Arrays.asList(response.body().getResults()));
+                }
             }
 
             @Override
-            public void onFailure(Call<Void> call, Throwable t) {
+            public void onFailure(Call<MoviesResponse> call, Throwable t) {
 
             }
         });
     }
 
-    private void showMostPopularMovies(List<MostPopularNestedResultResponse> mostPopularList) {
+    private void showMostPopularMovies(List<MoviesNestedItemResultsResponse> mostPopularList) {
         Log.i(TAG, "showMostPopularMovies size == " + mostPopularList.size());
-        for (MostPopularNestedResultResponse mostPopularMovie : mostPopularList){
+        for (MoviesNestedItemResultsResponse mostPopularMovie : mostPopularList){
 
             MovieMainModel mostPopularModel = MovieMainModel.builder()
                     .setTitle(mostPopularMovie.getOriginal_title())
@@ -137,6 +144,25 @@ public class MainActivity extends AppCompatActivity {
         }
 
         moviesAdapter.addAll(mostPopularArrayList);
+    }
+
+    private void showTopRatedMovies(List<MoviesNestedItemResultsResponse> topRatedList) {
+        Log.i(TAG, "showTopRateMovies size == " + topRatedList.size());
+        for (MoviesNestedItemResultsResponse topRatedMovie : topRatedList){
+
+            MovieMainModel topRatedModel = MovieMainModel.builder()
+                    .setTitle(topRatedMovie.getOriginal_title())
+                    .setOverview(topRatedMovie.getOverview())
+                    .setPosterPath(topRatedMovie.getPoster_path())
+                    .setReleaseDate(topRatedMovie.getRelease_date())
+                    .setVoteAverage(topRatedMovie.getVote_average())
+                    .build();
+
+            topRatedArrayList.add(topRatedModel);
+
+        }
+
+        moviesAdapter.addAll(topRatedArrayList);
     }
 
     private void setUpNetworking() {

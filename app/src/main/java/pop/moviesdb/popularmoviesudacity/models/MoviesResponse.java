@@ -8,9 +8,9 @@ import java.io.Serializable;
  * Models the response of GET "/movies/popular" service
  * in {@link pop.moviesdb.popularmoviesudacity.MoviesApiServices}
  */
-public class MostPopularResponse implements Serializable {
+public class MoviesResponse implements Serializable {
 
-    private MostPopularNestedResultResponse[] results;
+    private MoviesNestedItemResultsResponse[] results;
     private int page;
 
     @SerializedName("total_pages")
@@ -19,11 +19,11 @@ public class MostPopularResponse implements Serializable {
     @SerializedName("total_results")
     private int totalResults;
 
-    public MostPopularNestedResultResponse[] getResults() {
+    public MoviesNestedItemResultsResponse[] getResults() {
         return results;
     }
 
-    public void setResults(MostPopularNestedResultResponse[] results) {
+    public void setResults(MoviesNestedItemResultsResponse[] results) {
         this.results = results;
     }
 

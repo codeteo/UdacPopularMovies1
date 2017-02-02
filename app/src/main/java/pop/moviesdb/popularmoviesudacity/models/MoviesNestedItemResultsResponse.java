@@ -3,9 +3,9 @@ package pop.moviesdb.popularmoviesudacity.models;
 import java.io.Serializable;
 
 /**
- * Nested class of {@link MostPopularResponse}
+ * Nested class of {@link MoviesResponse}
  */
-public class MostPopularNestedResultResponse implements Serializable{
+public class MoviesNestedItemResultsResponse implements Serializable{
     private String vote_average;
 
     private String backdrop_path;

@@ -1,6 +1,6 @@
 package pop.moviesdb.popularmoviesudacity;
 
-import pop.moviesdb.popularmoviesudacity.models.MostPopularResponse;
+import pop.moviesdb.popularmoviesudacity.models.MoviesResponse;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
@@ -11,9 +11,9 @@ import retrofit2.http.Query;
 public interface MoviesApiServices {
 
     @GET("movie/popular")
-    Call<MostPopularResponse> getMostPopular(@Query("api_key") String apiKey);
+    Call<MoviesResponse> getMostPopular(@Query("api_key") String apiKey);
 
     @GET("movie/top_rated")
-    Call<Void> getTopRated(@Query("api_key") String apiKey);
+    Call<MoviesResponse> getTopRated(@Query("api_key") String apiKey);
 
 }

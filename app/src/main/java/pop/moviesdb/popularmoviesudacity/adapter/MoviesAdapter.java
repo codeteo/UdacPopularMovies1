@@ -76,6 +76,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
      * @param movies data to add
      */
     public void addAll(List<MovieMainModel> movies) {
+        dataset.clear();
         dataset.addAll(movies);
         notifyDataSetChanged();
     }
