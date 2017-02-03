@@ -44,6 +44,58 @@
             android:paddingTop="24dp">
 
             <android.support.v7.widget.CardView
+                android:layout_margin="16dp"
+                android:layout_width="match_parent" android:layout_height="wrap_content">
+
+                <LinearLayout
+                    style="@style/Widget.CardContent"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Details"
+                        android:layout_marginBottom="16dp"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+
+                    <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent" android:layout_height="wrap_content">
+
+                        <TextView
+                            android:text="Rating : "
+                            android:textStyle="bold" android:textSize="@dimen/detail_details_section_header"
+                            android:layout_width="wrap_content" android:layout_height="wrap_content" />
+
+                        <TextView
+                            android:id="@+id/tv_details_rating"
+                            android:textSize="@dimen/detail_details_section_content"
+                            android:layout_width="wrap_content" android:layout_height="wrap_content" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent" android:layout_height="wrap_content">
+
+                        <TextView
+                            android:text="Release Year : "
+                            android:textStyle="bold" android:textSize="@dimen/detail_details_section_header"
+                            android:layout_width="wrap_content" android:layout_height="wrap_content" />
+
+                        <TextView
+                            android:id="@+id/tv_details_year"
+                            android:textSize="@dimen/detail_details_section_content"
+                            android:layout_width="match_parent" android:layout_height="wrap_content" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </android.support.v7.widget.CardView>
+
+            <android.support.v7.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp">

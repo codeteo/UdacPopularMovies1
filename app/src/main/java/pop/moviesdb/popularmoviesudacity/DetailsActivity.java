@@ -26,6 +26,8 @@ public class DetailsActivity extends AppCompatActivity {
 
     @BindView(R.id.tb_details_toolbar) Toolbar toolbar;
     @BindView(R.id.tv_details_overview) TextView tvOverview;
+    @BindView(R.id.tv_details_rating) TextView tvRating;
+    @BindView(R.id.tv_details_year) TextView tvYear;
     @BindView(R.id.iv_details_backdrop) ImageView ivPoster;
     @BindView(R.id.collapsing_toolbar) CollapsingToolbarLayout collapsingToolbar;
 
@@ -55,6 +57,8 @@ public class DetailsActivity extends AppCompatActivity {
         collapsingToolbar.setTitle(movieModel.title());
 
         tvOverview.setText(movieModel.overview());
+        tvRating.setText(movieModel.voteAverage());
+        tvYear.setText(movieModel.releaseDate());
 
     }
 
