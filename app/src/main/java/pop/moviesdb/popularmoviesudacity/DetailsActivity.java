@@ -22,6 +22,7 @@ public class DetailsActivity extends AppCompatActivity {
 
     private static final String TAG = "DETAILS-ACTIVITY";
     private static final String INTENT_MOVIE = "movie";
+    private static final String KEY_MOVIE = "movie_key";
 
     @BindView(R.id.tb_details_toolbar) Toolbar toolbar;
     @BindView(R.id.tv_details_overview) TextView tvOverview;
@@ -39,7 +40,11 @@ public class DetailsActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        movieModel = getIntent().getParcelableExtra(INTENT_MOVIE);
+        if (savedInstanceState == null) {
+            movieModel = getIntent().getParcelableExtra(INTENT_MOVIE);
+        } else {
+            movieModel = savedInstanceState.getParcelable(KEY_MOVIE);
+        }
 
         Picasso.with(this)
                 .load(createUrlForPoster(movieModel.posterPath()))
@@ -51,6 +56,12 @@ public class DetailsActivity extends AppCompatActivity {
 
         tvOverview.setText(movieModel.overview());
 
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(KEY_MOVIE, movieModel);
     }
 
     @Override
