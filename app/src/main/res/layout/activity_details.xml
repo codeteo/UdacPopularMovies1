@@ -19,7 +19,8 @@
             <ImageView
                 android:id="@+id/iv_details_backdrop"
                 android:layout_width="match_parent" android:layout_height="match_parent"
-                android:scaleType="centerCrop" android:fitsSystemWindows="true" app:layout_collapseMode="parallax" />
+                android:scaleType="centerCrop" android:fitsSystemWindows="true" app:layout_collapseMode="parallax"
+                android:contentDescription="@string/details_backdrop_image_content_description" />
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/tb_details_toolbar"
@@ -55,7 +56,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Details"
+                        android:text="@string/details_details"
                         android:layout_marginBottom="16dp"
                         android:textAppearance="@style/TextAppearance.AppCompat.Title" />
 
@@ -64,7 +65,7 @@
                         android:layout_width="match_parent" android:layout_height="wrap_content">
 
                         <TextView
-                            android:text="Rating : "
+                            android:text="@string/details_rating"
                             android:textStyle="bold" android:textSize="@dimen/detail_details_section_header"
                             android:layout_width="wrap_content" android:layout_height="wrap_content" />
 
@@ -80,7 +81,7 @@
                         android:layout_width="match_parent" android:layout_height="wrap_content">
 
                         <TextView
-                            android:text="Release Year : "
+                            android:text="@string/details_release_year"
                             android:textStyle="bold" android:textSize="@dimen/detail_details_section_header"
                             android:layout_width="wrap_content" android:layout_height="wrap_content" />
 
@@ -108,7 +109,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Overview"
+                        android:text="@string/details_overview"
                         android:textAppearance="@style/TextAppearance.AppCompat.Title" />
 
                     <TextView
@@ -123,7 +124,5 @@
         </LinearLayout>
 
     </android.support.v4.widget.NestedScrollView>
-
-
 
 </android.support.design.widget.CoordinatorLayout>
