@@ -188,6 +188,7 @@ public class MainActivity extends BaseActivity {
         for (MoviesNestedItemResultsResponse mostPopularMovie : mostPopularList){
 
             MovieMainModel mostPopularModel = MovieMainModel.builder()
+                    .setId(Integer.valueOf(mostPopularMovie.getId()))
                     .setTitle(mostPopularMovie.getOriginal_title())
                     .setOverview(mostPopularMovie.getOverview())
                     .setPosterPath(mostPopularMovie.getPoster_path())
@@ -206,6 +207,7 @@ public class MainActivity extends BaseActivity {
         for (MoviesNestedItemResultsResponse topRatedMovie : topRatedList){
 
             MovieMainModel topRatedModel = MovieMainModel.builder()
+                    .setId(Integer.valueOf(topRatedMovie.getId()))
                     .setTitle(topRatedMovie.getOriginal_title())
                     .setOverview(topRatedMovie.getOverview())
                     .setPosterPath(topRatedMovie.getPoster_path())

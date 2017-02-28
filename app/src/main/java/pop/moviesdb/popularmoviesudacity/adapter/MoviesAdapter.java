@@ -2,7 +2,6 @@ package pop.moviesdb.popularmoviesudacity.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -67,7 +66,6 @@ public class MoviesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         moviesViewHolder.rlItemContainer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.i(TAG, "onClick mesa sto Click");
                 BusProvider.getInstance().post(new OpenDetailsActivityEvent(dataset.get(position)));
             }
         });

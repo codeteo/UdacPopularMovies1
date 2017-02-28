@@ -11,9 +11,19 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
+import java.util.concurrent.TimeUnit;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
 import pop.moviesdb.popularmoviesudacity.models.MovieMainModel;
+import pop.moviesdb.popularmoviesudacity.models.VideosResponse;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * Displays the details of a movie.
@@ -23,6 +33,7 @@ public class DetailsActivity extends AppCompatActivity {
     private static final String TAG = "DETAILS-ACTIVITY";
     private static final String INTENT_MOVIE = "movie";
     private static final String KEY_MOVIE = "movie_key";
+    private static final long CONNECTION_TIMEOUT = 15;
 
     @BindView(R.id.tb_details_toolbar) Toolbar toolbar;
     @BindView(R.id.tv_details_overview) TextView tvOverview;
@@ -30,6 +41,10 @@ public class DetailsActivity extends AppCompatActivity {
     @BindView(R.id.tv_details_year) TextView tvYear;
     @BindView(R.id.iv_details_backdrop) ImageView ivPoster;
     @BindView(R.id.collapsing_toolbar) CollapsingToolbarLayout collapsingToolbar;
+
+    OkHttpClient okHttpClient;
+    Retrofit retrofit;
+    MoviesApiServices apiServices;
 
     MovieMainModel movieModel;
 
@@ -42,8 +57,27 @@ public class DetailsActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        setUpNetworking();
+
+        apiServices = retrofit.create(MoviesApiServices.class);
+
         if (savedInstanceState == null) {
             movieModel = getIntent().getParcelableExtra(INTENT_MOVIE);
+
+            apiServices.getVideos(movieModel.id() , Constants.API_KEY).enqueue(new Callback<VideosResponse>() {
+                @Override
+                public void onResponse(Call<VideosResponse> call, Response<VideosResponse> response) {
+                    if (response.isSuccessful()) {
+
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<VideosResponse> call, Throwable t) {
+
+                }
+            });
+
         } else {
             movieModel = savedInstanceState.getParcelable(KEY_MOVIE);
         }
@@ -87,6 +121,22 @@ public class DetailsActivity extends AppCompatActivity {
      */
     private String createUrlForPoster(String posterPath) {
         return Constants.BASE_IMAGE_URL + Constants.URL_PART_IMAGE_SIZE + posterPath;
+    }
+
+    private void setUpNetworking() {
+        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
+        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+
+        okHttpClient = new OkHttpClient.Builder()
+                .connectTimeout(CONNECTION_TIMEOUT, TimeUnit.SECONDS)
+                .addInterceptor(interceptor)
+                .build();
+
+        retrofit = new Retrofit.Builder()
+                .client(okHttpClient)
+                .baseUrl(Constants.BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
     }
 
 }

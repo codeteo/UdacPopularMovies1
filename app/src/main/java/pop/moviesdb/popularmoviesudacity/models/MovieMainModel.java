@@ -6,11 +6,13 @@ import com.google.auto.value.AutoValue;
 
 /**
  * Main model for items in {@link pop.moviesdb.popularmoviesudacity.MainActivity}.
- * It also implements Parcelable interface so it is immutable
+ * It also implements Parcelable interface so it is immutable and can be stored
+ * when there's a configuration change to the Bundle.
  */
 @AutoValue
 public abstract class MovieMainModel implements Parcelable {
 
+    public abstract int id();
     public abstract String title();
     public abstract String posterPath();
     public abstract String overview();
@@ -24,6 +26,7 @@ public abstract class MovieMainModel implements Parcelable {
     @AutoValue.Builder
     public static abstract class Builder {
 
+        public abstract Builder setId(int id);
         public abstract Builder setTitle(String title);
         public abstract Builder setPosterPath(String posterPath);
         public abstract Builder setOverview(String overview);
