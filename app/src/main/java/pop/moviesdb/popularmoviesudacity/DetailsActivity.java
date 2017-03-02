@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -20,6 +21,7 @@ import butterknife.ButterKnife;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import pop.moviesdb.popularmoviesudacity.models.MovieMainModel;
+import pop.moviesdb.popularmoviesudacity.models.VideoDatasetModel;
 import pop.moviesdb.popularmoviesudacity.models.VideoMainModel;
 import pop.moviesdb.popularmoviesudacity.models.VideosNestedItemResultsResponse;
 import pop.moviesdb.popularmoviesudacity.models.VideosResponse;
@@ -37,6 +39,7 @@ public class DetailsActivity extends AppCompatActivity {
     private static final String TAG = "DETAILS-ACTIVITY";
     private static final String INTENT_MOVIE = "movie";
     private static final String KEY_MOVIE = "movie_key";
+    private static final String KEY_VIDEOS = "video_key";
     private static final long CONNECTION_TIMEOUT = 15;
 
     @BindView(R.id.tb_details_toolbar) Toolbar toolbar;
@@ -53,6 +56,7 @@ public class DetailsActivity extends AppCompatActivity {
     MovieMainModel movieModel;
 
     private List<VideoMainModel> videoList = new ArrayList<>();
+    private VideoDatasetModel videoListDataset;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -70,31 +74,38 @@ public class DetailsActivity extends AppCompatActivity {
         if (savedInstanceState == null) {
             movieModel = getIntent().getParcelableExtra(INTENT_MOVIE);
 
-            apiServices.getVideos(movieModel.id() , Constants.API_KEY).enqueue(new Callback<VideosResponse>() {
-                @Override
-                public void onResponse(Call<VideosResponse> call, Response<VideosResponse> response) {
-                    if (response.isSuccessful()) {
-                        for (VideosNestedItemResultsResponse nestedItem: response.body().getResults()){
-                            VideoMainModel videoMainModel = VideoMainModel.builder()
-                                    .setId(nestedItem.getId())
-                                    .setKey(nestedItem.getKey())
-                                    .setName(nestedItem.getName())
-                                    .setType(nestedItem.getType())
-                                    .build();
+            if (videoListDataset == null) {
+                apiServices.getVideos(movieModel.id() , Constants.API_KEY).enqueue(new Callback<VideosResponse>() {
+                    @Override
+                    public void onResponse(Call<VideosResponse> call, Response<VideosResponse> response) {
+                        if (response.isSuccessful()) {
+                            for (VideosNestedItemResultsResponse nestedItem: response.body().getResults()){
+                                VideoMainModel videoMainModel = VideoMainModel.builder()
+                                        .setId(nestedItem.getId())
+                                        .setKey(nestedItem.getKey())
+                                        .setName(nestedItem.getName())
+                                        .setType(nestedItem.getType())
+                                        .build();
 
-                            videoList.add(videoMainModel);
+                                videoList.add(videoMainModel);
+                            }
+
+                            videoListDataset = VideoDatasetModel.builder()
+                                    .setVideoList(videoList)
+                                    .build();
                         }
                     }
-                }
 
-                @Override
-                public void onFailure(Call<VideosResponse> call, Throwable t) {
+                    @Override
+                    public void onFailure(Call<VideosResponse> call, Throwable t) {
 
-                }
-            });
+                    }
+                });
 
+            }
         } else {
             movieModel = savedInstanceState.getParcelable(KEY_MOVIE);
+            videoListDataset = savedInstanceState.getParcelable(KEY_VIDEOS);
         }
 
         Picasso.with(this)
@@ -115,6 +126,7 @@ public class DetailsActivity extends AppCompatActivity {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelable(KEY_MOVIE, movieModel);
+        outState.putParcelable(KEY_VIDEOS, videoListDataset);
     }
 
     @Override
