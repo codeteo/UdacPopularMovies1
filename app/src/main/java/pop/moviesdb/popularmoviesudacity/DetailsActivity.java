@@ -11,6 +11,8 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
@@ -18,6 +20,8 @@ import butterknife.ButterKnife;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import pop.moviesdb.popularmoviesudacity.models.MovieMainModel;
+import pop.moviesdb.popularmoviesudacity.models.VideoMainModel;
+import pop.moviesdb.popularmoviesudacity.models.VideosNestedItemResultsResponse;
 import pop.moviesdb.popularmoviesudacity.models.VideosResponse;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -48,6 +52,8 @@ public class DetailsActivity extends AppCompatActivity {
 
     MovieMainModel movieModel;
 
+    private List<VideoMainModel> videoList = new ArrayList<>();
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,7 +74,16 @@ public class DetailsActivity extends AppCompatActivity {
                 @Override
                 public void onResponse(Call<VideosResponse> call, Response<VideosResponse> response) {
                     if (response.isSuccessful()) {
+                        for (VideosNestedItemResultsResponse nestedItem: response.body().getResults()){
+                            VideoMainModel videoMainModel = VideoMainModel.builder()
+                                    .setId(nestedItem.getId())
+                                    .setKey(nestedItem.getKey())
+                                    .setName(nestedItem.getName())
+                                    .setType(nestedItem.getType())
+                                    .build();
 
+                            videoList.add(videoMainModel);
+                        }
                     }
                 }
 
