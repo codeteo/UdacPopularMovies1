@@ -1,9 +1,10 @@
 package pop.moviesdb.popularmoviesudacity;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -11,6 +12,7 @@ import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.squareup.otto.Subscribe;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -22,6 +24,7 @@ import butterknife.ButterKnife;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import pop.moviesdb.popularmoviesudacity.adapter.VideosAdapter;
+import pop.moviesdb.popularmoviesudacity.events.OpenYoutubeVideoEvent;
 import pop.moviesdb.popularmoviesudacity.models.MovieMainModel;
 import pop.moviesdb.popularmoviesudacity.models.VideoDatasetModel;
 import pop.moviesdb.popularmoviesudacity.models.VideoMainModel;
@@ -36,13 +39,14 @@ import retrofit2.converter.gson.GsonConverterFactory;
 /**
  * Displays the details of a movie.
  */
-public class DetailsActivity extends AppCompatActivity {
+public class DetailsActivity extends BaseActivity {
 
     private static final String TAG = "DETAILS-ACTIVITY";
     private static final String INTENT_MOVIE = "movie";
     private static final String KEY_MOVIE = "movie_key";
     private static final String KEY_VIDEOS = "video_key";
     private static final long CONNECTION_TIMEOUT = 15;
+    private static final String YOUTUBE_BASE_URL = "http://www.youtube.com/watch?v=";
 
     @BindView(R.id.tb_details_toolbar) Toolbar toolbar;
     @BindView(R.id.tv_details_overview) TextView tvOverview;
@@ -144,6 +148,13 @@ public class DetailsActivity extends AppCompatActivity {
         linearLayoutManager = new LinearLayoutManager(this);
         rvVideoList.setLayoutManager(linearLayoutManager);
         rvVideoList.setAdapter(videosAdapter);
+    }
+
+    @Subscribe
+    public void onOpenYoutubeVideoEventReceived(OpenYoutubeVideoEvent event) {
+        Intent intent = new Intent(Intent.ACTION_VIEW,
+                Uri.parse(YOUTUBE_BASE_URL + event.getVideoMainModel().key()));
+        startActivity(intent);
     }
 
     @Override

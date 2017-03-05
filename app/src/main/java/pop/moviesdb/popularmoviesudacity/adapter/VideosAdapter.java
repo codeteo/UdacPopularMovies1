@@ -15,6 +15,8 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import pop.moviesdb.popularmoviesudacity.R;
+import pop.moviesdb.popularmoviesudacity.events.BusProvider;
+import pop.moviesdb.popularmoviesudacity.events.OpenYoutubeVideoEvent;
 import pop.moviesdb.popularmoviesudacity.models.VideoMainModel;
 
 /**
@@ -53,7 +55,7 @@ public class VideosAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         videosViewHolder.llItemContainer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                BusProvider.getInstance().post(new OpenYoutubeVideoEvent(dataset.get(position)));
             }
         });
 
