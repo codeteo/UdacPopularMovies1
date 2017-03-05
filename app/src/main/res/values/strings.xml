@@ -15,6 +15,7 @@
     <string name="details_rating">Rating : </string>
     <string name="details_release_year">Release Date : </string>
     <string name="details_overview">Overview </string>
+    <string name="details_videos">Videos </string>
     <!-- Details screen end-->
 
 </resources>

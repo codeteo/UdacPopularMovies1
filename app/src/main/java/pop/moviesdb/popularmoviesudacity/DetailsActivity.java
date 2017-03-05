@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
@@ -20,6 +21,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
+import pop.moviesdb.popularmoviesudacity.adapter.VideosAdapter;
 import pop.moviesdb.popularmoviesudacity.models.MovieMainModel;
 import pop.moviesdb.popularmoviesudacity.models.VideoDatasetModel;
 import pop.moviesdb.popularmoviesudacity.models.VideoMainModel;
@@ -58,6 +60,8 @@ public class DetailsActivity extends AppCompatActivity {
 
     private List<VideoMainModel> videoList = new ArrayList<>();
     private VideoDatasetModel videoListDataset;
+    private VideosAdapter videosAdapter;
+    private LinearLayoutManager linearLayoutManager;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -72,6 +76,8 @@ public class DetailsActivity extends AppCompatActivity {
 
         apiServices = retrofit.create(MoviesApiServices.class);
 
+        videosAdapter = new VideosAdapter(this);
+
         if (savedInstanceState == null) {
             movieModel = getIntent().getParcelableExtra(INTENT_MOVIE);
 
@@ -82,6 +88,8 @@ public class DetailsActivity extends AppCompatActivity {
             videoListDataset = savedInstanceState.getParcelable(KEY_VIDEOS);
             if (videoListDataset == null) {
                 executeVideoRequest();
+            } else {
+                setVideosAdapter();
             }
         }
 
@@ -118,6 +126,8 @@ public class DetailsActivity extends AppCompatActivity {
                     videoListDataset = VideoDatasetModel.builder()
                             .setVideoList(videoList)
                             .build();
+
+                    setVideosAdapter();
                 }
             }
 
@@ -126,6 +136,14 @@ public class DetailsActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    private void setVideosAdapter() {
+        videosAdapter.addAll(videoListDataset.videoList());
+
+        linearLayoutManager = new LinearLayoutManager(this);
+        rvVideoList.setLayoutManager(linearLayoutManager);
+        rvVideoList.setAdapter(videosAdapter);
     }
 
     @Override
