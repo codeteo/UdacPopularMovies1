@@ -3,6 +3,7 @@
 
     <!-- Main screen start-->
     <string name="movies_image">Movie\'s Image</string>
+    <string name="video_icon">Video\'s Play Arrow icon</string>
     <string name="action_settings">Settings</string>
     <string name="action_most_popular">Most Popular</string>
     <string name="action_top_rated">Top Rated</string>

@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.widget.ImageView;
@@ -47,6 +48,7 @@ public class DetailsActivity extends AppCompatActivity {
     @BindView(R.id.tv_details_year) TextView tvYear;
     @BindView(R.id.iv_details_backdrop) ImageView ivPoster;
     @BindView(R.id.collapsing_toolbar) CollapsingToolbarLayout collapsingToolbar;
+    @BindView(R.id.rv_details_video_list) RecyclerView rvVideoList;
 
     OkHttpClient okHttpClient;
     Retrofit retrofit;
