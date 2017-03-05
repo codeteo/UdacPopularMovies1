@@ -5,7 +5,6 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -74,38 +73,14 @@ public class DetailsActivity extends AppCompatActivity {
         if (savedInstanceState == null) {
             movieModel = getIntent().getParcelableExtra(INTENT_MOVIE);
 
-            if (videoListDataset == null) {
-                apiServices.getVideos(movieModel.id() , Constants.API_KEY).enqueue(new Callback<VideosResponse>() {
-                    @Override
-                    public void onResponse(Call<VideosResponse> call, Response<VideosResponse> response) {
-                        if (response.isSuccessful()) {
-                            for (VideosNestedItemResultsResponse nestedItem: response.body().getResults()){
-                                VideoMainModel videoMainModel = VideoMainModel.builder()
-                                        .setId(nestedItem.getId())
-                                        .setKey(nestedItem.getKey())
-                                        .setName(nestedItem.getName())
-                                        .setType(nestedItem.getType())
-                                        .build();
+            executeVideoRequest();
 
-                                videoList.add(videoMainModel);
-                            }
-
-                            videoListDataset = VideoDatasetModel.builder()
-                                    .setVideoList(videoList)
-                                    .build();
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<VideosResponse> call, Throwable t) {
-
-                    }
-                });
-
-            }
         } else {
             movieModel = savedInstanceState.getParcelable(KEY_MOVIE);
             videoListDataset = savedInstanceState.getParcelable(KEY_VIDEOS);
+            if (videoListDataset == null) {
+                executeVideoRequest();
+            }
         }
 
         Picasso.with(this)
@@ -120,6 +95,35 @@ public class DetailsActivity extends AppCompatActivity {
         tvRating.setText(movieModel.voteAverage());
         tvYear.setText(movieModel.releaseDate());
 
+    }
+
+    private void executeVideoRequest() {
+        apiServices.getVideos(movieModel.id() , Constants.API_KEY).enqueue(new Callback<VideosResponse>() {
+            @Override
+            public void onResponse(Call<VideosResponse> call, Response<VideosResponse> response) {
+                if (response.isSuccessful()) {
+                    for (VideosNestedItemResultsResponse nestedItem: response.body().getResults()){
+                        VideoMainModel videoMainModel = VideoMainModel.builder()
+                                .setId(nestedItem.getId())
+                                .setKey(nestedItem.getKey())
+                                .setName(nestedItem.getName())
+                                .setType(nestedItem.getType())
+                                .build();
+
+                        videoList.add(videoMainModel);
+                    }
+
+                    videoListDataset = VideoDatasetModel.builder()
+                            .setVideoList(videoList)
+                            .build();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<VideosResponse> call, Throwable t) {
+
+            }
+        });
     }
 
     @Override
