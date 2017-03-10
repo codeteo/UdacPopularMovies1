@@ -1,5 +1,6 @@
 package pop.moviesdb.popularmoviesudacity;
 
+import android.content.ContentValues;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -9,7 +10,9 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -25,6 +28,7 @@ import butterknife.ButterKnife;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import pop.moviesdb.popularmoviesudacity.adapter.VideosAdapter;
+import pop.moviesdb.popularmoviesudacity.data.MoviesContract;
 import pop.moviesdb.popularmoviesudacity.events.OpenYoutubeVideoEvent;
 import pop.moviesdb.popularmoviesudacity.models.MovieMainModel;
 import pop.moviesdb.popularmoviesudacity.models.VideoDatasetModel;
@@ -110,6 +114,26 @@ public class DetailsActivity extends BaseActivity {
         tvOverview.setText(movieModel.overview());
         tvRating.setText(movieModel.voteAverage());
         tvYear.setText(movieModel.releaseDate());
+
+        fabAddFavorite.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int id = movieModel.id();
+                String title = movieModel.title();
+
+                ContentValues contentValues = new ContentValues();
+
+                contentValues.put(MoviesContract.Favorites.COLUMN_MOVIE_ID, id);
+                contentValues.put(MoviesContract.Favorites.COLUMN_TITLE, title);
+
+                Uri uri = getContentResolver().insert(MoviesContract.Favorites.CONTENT_URI, contentValues);
+
+                if (uri != null) {
+                    Log.i(TAG, "onClick uri : " + uri.toString());
+                }
+
+            }
+        });
 
     }
 
