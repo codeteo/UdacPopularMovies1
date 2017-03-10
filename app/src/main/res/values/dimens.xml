@@ -8,6 +8,7 @@
     <dimen name="detail_overview_textsize">16sp</dimen>
     <dimen name="detail_details_section_header">20sp</dimen>
     <dimen name="detail_details_section_content">16sp</dimen>
+    <dimen name="detail_fab_button_margin">16dp</dimen>
 
     <dimen name="item_video_play_arrow_size">48dp</dimen>
 </resources>

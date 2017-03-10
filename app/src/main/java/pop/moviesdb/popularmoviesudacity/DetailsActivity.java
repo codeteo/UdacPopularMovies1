@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -55,6 +56,7 @@ public class DetailsActivity extends BaseActivity {
     @BindView(R.id.iv_details_backdrop) ImageView ivPoster;
     @BindView(R.id.collapsing_toolbar) CollapsingToolbarLayout collapsingToolbar;
     @BindView(R.id.rv_details_video_list) RecyclerView rvVideoList;
+    @BindView(R.id.fab_details_add_favorite) FloatingActionButton fabAddFavorite;
 
     OkHttpClient okHttpClient;
     Retrofit retrofit;
