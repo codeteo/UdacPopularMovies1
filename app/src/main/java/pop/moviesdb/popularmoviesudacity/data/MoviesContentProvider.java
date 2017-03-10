@@ -1,12 +1,17 @@
 package pop.moviesdb.popularmoviesudacity.data;
 
 import android.content.ContentProvider;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.UriMatcher;
 import android.database.Cursor;
+import android.database.SQLException;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.annotation.Nullable;
+
+import pop.moviesdb.popularmoviesudacity.data.MoviesContract.Favorites;
 
 import static pop.moviesdb.popularmoviesudacity.data.MoviesContract.AUTHORITY;
 import static pop.moviesdb.popularmoviesudacity.data.MoviesContract.PATH_FAVORITE;
@@ -59,7 +64,28 @@ public class MoviesContentProvider extends ContentProvider {
     @Nullable
     @Override
     public Uri insert(Uri uri, ContentValues contentValues) {
-        return null;
+        final SQLiteDatabase db = moviesDbHelper.getWritableDatabase();
+
+        int match = uriMatcher.match(uri);
+
+        Uri returnUri;
+
+        switch (match) {
+            case FAVORITES:
+                long id = db.insert(Favorites.TABLE_NAME, null, contentValues);
+                if (id > 0) {
+                    returnUri = ContentUris.withAppendedId(Favorites.CONTENT_URI, id);
+                } else {
+                    throw new SQLException("Failed to insert row into : " + uri);
+                }
+                break;
+            default:
+                throw new UnsupportedOperationException("Unknown Uri : " + uri);
+        }
+
+        getContext().getContentResolver().notifyChange(uri, null);
+
+        return returnUri;
     }
 
     @Override
