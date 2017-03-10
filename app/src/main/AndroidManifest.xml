@@ -16,7 +16,7 @@
         <activity android:name=".DetailsActivity"/>
 
         <provider
-            android:authorities="pop.moviesdb.popularmoviesudacity"
+            android:authorities="@string/content_authority"
             android:name=".data.MoviesContentProvider"
             android:exported="false"/>
         
