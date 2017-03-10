@@ -17,7 +17,7 @@
 
         <provider
             android:authorities="pop.moviesdb.popularmoviesudacity"
-            android:name=".data.MoviesContentProvides"
+            android:name=".data.MoviesContentProvider"
             android:exported="false"/>
         
     </application>
