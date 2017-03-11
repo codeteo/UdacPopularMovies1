@@ -2,6 +2,7 @@ package pop.moviesdb.popularmoviesudacity;
 
 import android.content.ContentValues;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -118,6 +119,13 @@ public class DetailsActivity extends BaseActivity {
         tvOverview.setText(movieModel.overview());
         tvRating.setText(movieModel.voteAverage());
         tvYear.setText(movieModel.releaseDate());
+
+        moviesDataSource = new MoviesDataSource(this);
+        isFavorite = moviesDataSource.isFavorite(movieModel);
+        if (isFavorite) {
+            Log.i(TAG, "onCreate isFavorite!!");
+            fabAddFavorite.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorAccent)));
+        }
 
         fabAddFavorite.setOnClickListener(new View.OnClickListener() {
             @Override
