@@ -16,6 +16,9 @@ public class MoviesContract {
     // This is the path for "favorites" table
     public static final String PATH_FAVORITE = "favorites";
 
+    // To prevent someone from accidentally instantiate the Contract class.
+    private MoviesContract() { }
+
     public static final class Favorites implements BaseColumns {
 
         public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon()

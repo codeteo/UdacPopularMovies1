@@ -10,6 +10,7 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import pop.moviesdb.popularmoviesudacity.data.MoviesContract.Favorites;
 
@@ -21,6 +22,8 @@ import static pop.moviesdb.popularmoviesudacity.data.MoviesContract.PATH_FAVORIT
  */
 
 public class MoviesContentProvider extends ContentProvider {
+
+    private static final String TAG = "CONTENT-PROVIDER";
 
     public static final int FAVORITES = 100;
     public static final int FAVORITES_WITH_ID = 101;
@@ -51,7 +54,39 @@ public class MoviesContentProvider extends ContentProvider {
 
     @Nullable
     @Override
-    public Cursor query(Uri uri, String[] strings, String s, String[] strings1, String s1) {
+    public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
+        Cursor returnCursor;
+        switch (uriMatcher.match(uri)) {
+            case FAVORITES_WITH_ID :
+                returnCursor = moviesDbHelper.getReadableDatabase().query(
+                        Favorites.TABLE_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder
+                );
+                Log.i(TAG, "query FAV_WITH_ID");
+                break;
+            case FAVORITES :
+                returnCursor = moviesDbHelper.getReadableDatabase().query(
+                        Favorites.TABLE_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder
+                );
+                Log.i(TAG, "query FAVORITES");
+                break;
+            default:
+                throw new UnsupportedOperationException("Unknown uri : " + uri);
+        }
+
+        returnCursor.setNotificationUri(getContext().getContentResolver(), uri);
+
         return null;
     }
 
