@@ -29,6 +29,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import pop.moviesdb.popularmoviesudacity.adapter.VideosAdapter;
 import pop.moviesdb.popularmoviesudacity.data.MoviesContract;
+import pop.moviesdb.popularmoviesudacity.data.MoviesDataSource;
 import pop.moviesdb.popularmoviesudacity.events.OpenYoutubeVideoEvent;
 import pop.moviesdb.popularmoviesudacity.models.MovieMainModel;
 import pop.moviesdb.popularmoviesudacity.models.VideoDatasetModel;
@@ -72,6 +73,9 @@ public class DetailsActivity extends BaseActivity {
     private VideoDatasetModel videoListDataset;
     private VideosAdapter videosAdapter;
     private LinearLayoutManager linearLayoutManager;
+
+    private MoviesDataSource moviesDataSource;
+    private boolean isFavorite = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {

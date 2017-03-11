@@ -56,6 +56,7 @@ public class MoviesContentProvider extends ContentProvider {
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         Cursor returnCursor;
+        Log.i(TAG, "query uri === " + uri.toString());
         switch (uriMatcher.match(uri)) {
             case FAVORITES_WITH_ID :
                 returnCursor = moviesDbHelper.getReadableDatabase().query(
