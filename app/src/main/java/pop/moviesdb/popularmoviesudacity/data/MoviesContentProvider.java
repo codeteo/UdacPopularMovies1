@@ -9,6 +9,7 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
@@ -125,8 +126,25 @@ public class MoviesContentProvider extends ContentProvider {
     }
 
     @Override
-    public int delete(Uri uri, String s, String[] strings) {
-        return 0;
+    public int delete(@NonNull Uri uri, String selection, String[] selectionArgs) {
+        SQLiteDatabase db = moviesDbHelper.getWritableDatabase();
+
+        int rowsDeleted = 0;
+
+        switch (uriMatcher.match(uri)) {
+            case FAVORITES_WITH_ID :
+                long id = MoviesContract.getIdFromUri(uri);
+                rowsDeleted = db.delete(Favorites.TABLE_NAME, Favorites.COLUMN_MOVIE_ID + "=?", new String[]{String.valueOf(id)});
+                break;
+            default:
+                throw new UnsupportedOperationException("Unknown Uri : " + uri);
+        }
+
+        if (rowsDeleted != 0) {
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
+
+        return rowsDeleted;
     }
 
     @Override

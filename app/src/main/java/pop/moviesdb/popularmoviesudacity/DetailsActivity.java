@@ -11,7 +11,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -29,7 +28,6 @@ import butterknife.ButterKnife;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import pop.moviesdb.popularmoviesudacity.adapter.VideosAdapter;
-import pop.moviesdb.popularmoviesudacity.data.MoviesContract;
 import pop.moviesdb.popularmoviesudacity.data.MoviesDataSource;
 import pop.moviesdb.popularmoviesudacity.events.OpenYoutubeVideoEvent;
 import pop.moviesdb.popularmoviesudacity.models.MovieMainModel;
@@ -42,6 +40,8 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+
+import static pop.moviesdb.popularmoviesudacity.data.MoviesContract.Favorites;
 
 /**
  * Displays the details of a movie.
@@ -123,7 +123,6 @@ public class DetailsActivity extends BaseActivity {
         moviesDataSource = new MoviesDataSource(this);
         isFavorite = moviesDataSource.isFavorite(movieModel);
         if (isFavorite) {
-            Log.i(TAG, "onCreate isFavorite!!");
             fabAddFavorite.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorAccent)));
         }
 
@@ -135,13 +134,22 @@ public class DetailsActivity extends BaseActivity {
 
                 ContentValues contentValues = new ContentValues();
 
-                contentValues.put(MoviesContract.Favorites.COLUMN_MOVIE_ID, id);
-                contentValues.put(MoviesContract.Favorites.COLUMN_TITLE, title);
+                contentValues.put(Favorites.COLUMN_MOVIE_ID, id);
+                contentValues.put(Favorites.COLUMN_TITLE, title);
 
-                Uri uri = getContentResolver().insert(MoviesContract.Favorites.CONTENT_URI, contentValues);
+                isFavorite = !isFavorite;
 
-                if (uri != null) {
-                    Log.i(TAG, "onClick uri : " + uri.toString());
+                if (isFavorite) {
+                    Uri uri = getContentResolver().insert(Favorites.CONTENT_URI, contentValues);
+                    if (uri != null) {
+                        fabAddFavorite.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorAccent)));
+                    }
+                } else {
+                    int rowsDeleted = getContentResolver().delete(Favorites.buildMovieUri(id),
+                            null, new String[]{Favorites.COLUMN_MOVIE_ID + "=" + id});
+                    if (rowsDeleted > 0) {
+                        fabAddFavorite.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.white)));
+                    }
                 }
 
             }

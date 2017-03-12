@@ -17,6 +17,7 @@ public class MoviesDataSource {
 
     public MoviesDataSource(Context context) {
         this.context = context;
+        new MoviesDbHelper(context);
     }
 
     public boolean isFavorite(MovieMainModel movie) {

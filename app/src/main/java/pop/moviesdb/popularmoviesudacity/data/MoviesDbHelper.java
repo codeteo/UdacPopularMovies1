@@ -4,6 +4,8 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import java.io.File;
+
 import static android.provider.BaseColumns._ID;
 import static pop.moviesdb.popularmoviesudacity.data.MoviesContract.*;
 
@@ -14,7 +16,7 @@ import static pop.moviesdb.popularmoviesudacity.data.MoviesContract.*;
 public class MoviesDbHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "movies.db";
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 5;
 
     public MoviesDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -39,4 +41,13 @@ public class MoviesDbHelper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + Favorites.TABLE_NAME);
         onCreate(sqLiteDatabase);
     }
+
+    /**
+     * Helper method to check if db exists
+     */
+    public static boolean doesDatabaseExist(Context context) {
+        File dbFile = context.getDatabasePath(DATABASE_NAME);
+        return dbFile.exists();
+    }
+
 }

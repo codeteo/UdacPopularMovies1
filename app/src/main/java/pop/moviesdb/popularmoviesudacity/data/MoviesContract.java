@@ -39,4 +39,8 @@ public class MoviesContract {
 
     }
 
+    public static long getIdFromUri(Uri uri) {
+        return Long.parseLong(uri.getPathSegments().get(1));
+    }
+
 }
