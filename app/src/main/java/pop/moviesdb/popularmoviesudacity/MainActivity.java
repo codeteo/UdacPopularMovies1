@@ -1,7 +1,6 @@
 package pop.moviesdb.popularmoviesudacity;
 
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -23,7 +22,7 @@ import butterknife.ButterKnife;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import pop.moviesdb.popularmoviesudacity.adapter.MoviesAdapter;
-import pop.moviesdb.popularmoviesudacity.data.MoviesContract.Favorites;
+import pop.moviesdb.popularmoviesudacity.data.MoviesDataSource;
 import pop.moviesdb.popularmoviesudacity.events.OpenDetailsActivityEvent;
 import pop.moviesdb.popularmoviesudacity.models.MovieMainModel;
 import pop.moviesdb.popularmoviesudacity.models.MoviesNestedItemResultsResponse;
@@ -163,36 +162,9 @@ public class MainActivity extends BaseActivity {
     }
 
     private void loadFavoritesFromDatabase() {
-        Cursor cursor = getContentResolver().query(Favorites.CONTENT_URI,
-                null, null, null, null);
-
-        if (cursor != null) {
-            if (cursor.moveToNext()) {
-                do {
-                    int movieId = cursor.getInt(cursor.getColumnIndex(Favorites.COLUMN_MOVIE_ID));
-                    String title = cursor.getString(cursor.getColumnIndex(Favorites.COLUMN_TITLE));
-                    String posterPath = cursor.getString(cursor.getColumnIndex(Favorites.COLUMN_POSTER_PATH));
-                    String overview = cursor.getString(cursor.getColumnIndex(Favorites.COLUMN_OVERVIEW));
-                    String releaseDate = cursor.getString(cursor.getColumnIndex(Favorites.COLUMN_RELEASE_DATE));
-                    String voteAverage = cursor.getString(cursor.getColumnIndex(Favorites.COLUMN_VOTE_AVERAGE));
-
-                    MovieMainModel movieMainModel = MovieMainModel.builder()
-                            .setId(movieId)
-                            .setTitle(title)
-                            .setPosterPath(posterPath)
-                            .setOverview(overview)
-                            .setReleaseDate(releaseDate)
-                            .setVoteAverage(voteAverage)
-                            .build();
-
-                    favoritesArrayList.add(movieMainModel);
-
-                } while (cursor.moveToNext());
-            }
-            cursor.close();
-            moviesAdapter.addAll(favoritesArrayList);
-        }
-
+        MoviesDataSource moviesDataSource = new MoviesDataSource(this);
+        favoritesArrayList = moviesDataSource.getFavorites();
+        moviesAdapter.addAll(favoritesArrayList);
     }
 
     /**
