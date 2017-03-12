@@ -1,6 +1,7 @@
 package pop.moviesdb.popularmoviesudacity;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -22,6 +23,7 @@ import butterknife.ButterKnife;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import pop.moviesdb.popularmoviesudacity.adapter.MoviesAdapter;
+import pop.moviesdb.popularmoviesudacity.data.MoviesContract.Favorites;
 import pop.moviesdb.popularmoviesudacity.events.OpenDetailsActivityEvent;
 import pop.moviesdb.popularmoviesudacity.models.MovieMainModel;
 import pop.moviesdb.popularmoviesudacity.models.MoviesNestedItemResultsResponse;
@@ -47,6 +49,7 @@ public class MainActivity extends BaseActivity {
     private static final String TAG = "MAIN-ACTIVITY";
     private static final String MOST_POPULAR_KEY = "most_popular";
     private static final String TOP_RATED_KEY = "top_rated";
+    private static final String FAVORITES_KEY = "favorites";
     private static final String CURRENTLY_DISPLAYED_KEY = "currently_displayed";
     private static final String INTENT_MOVIE = "movie";
     private static final long CONNECTION_TIMEOUT = 15;
@@ -63,9 +66,11 @@ public class MainActivity extends BaseActivity {
 
     ArrayList<MovieMainModel> mostPopularArrayList = new ArrayList<>();
     ArrayList<MovieMainModel> topRatedArrayList = new ArrayList<>();
+    ArrayList<MovieMainModel> favoritesArrayList = new ArrayList<>();
 
     // keeps state of currently displayed data, initially we display "Most Popular"
-    private boolean isMostPopularDisplayed = true;
+    // 0 for MostPopular, 1 for TopRated and 2 for favorites
+    private int isCurrentlyDisplayed = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,32 +95,23 @@ public class MainActivity extends BaseActivity {
 
         if (savedInstanceState == null) {
 
-            apiServices.getMostPopular(Constants.API_KEY).enqueue(new Callback<MoviesResponse>() {
-                @Override
-                public void onResponse(Call<MoviesResponse> call, Response<MoviesResponse> response) {
-                    if (response.isSuccessful()) {
-                        showMostPopularMovies(Arrays.asList(response.body().getResults()));
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<MoviesResponse> call, Throwable t) {
-
-                }
-            });
+            executeMostPopularService();
 
         } else {
             Log.i(TAG, "onCreate State is NOT NULL");
             mostPopularArrayList = savedInstanceState.getParcelableArrayList(MOST_POPULAR_KEY);
             topRatedArrayList = savedInstanceState.getParcelableArrayList(TOP_RATED_KEY);
+            favoritesArrayList = savedInstanceState.getParcelableArrayList(FAVORITES_KEY);
 
-            isMostPopularDisplayed = savedInstanceState.getBoolean(CURRENTLY_DISPLAYED_KEY);
+            isCurrentlyDisplayed = savedInstanceState.getInt(CURRENTLY_DISPLAYED_KEY);
 
             // insert mostPopular to Adapter
-            if (isMostPopularDisplayed) {
+            if (isCurrentlyDisplayed == 0) {
                 moviesAdapter.addAll(mostPopularArrayList);
-            } else {
+            } else if (isCurrentlyDisplayed == 1){
                 moviesAdapter.addAll(topRatedArrayList);
+            } else {
+                moviesAdapter.addAll(favoritesArrayList);
             }
         }
 
@@ -126,7 +122,8 @@ public class MainActivity extends BaseActivity {
         super.onSaveInstanceState(outState);
         outState.putParcelableArrayList(MOST_POPULAR_KEY, mostPopularArrayList);
         outState.putParcelableArrayList(TOP_RATED_KEY, topRatedArrayList);
-        outState.putBoolean(CURRENTLY_DISPLAYED_KEY, isMostPopularDisplayed);
+        outState.putParcelableArrayList(FAVORITES_KEY, favoritesArrayList);
+        outState.putInt(CURRENTLY_DISPLAYED_KEY, isCurrentlyDisplayed);
     }
 
     @Override
@@ -142,7 +139,7 @@ public class MainActivity extends BaseActivity {
                 if (!mostPopularArrayList.isEmpty()) {
                     moviesAdapter.addAll(mostPopularArrayList);
                 }
-                isMostPopularDisplayed = true;
+                isCurrentlyDisplayed = 0;
                 return true;
             case R.id.action_top_rated:
                 if (!topRatedArrayList.isEmpty()) {
@@ -150,11 +147,52 @@ public class MainActivity extends BaseActivity {
                 } else {
                     executeTopRatedService();
                 }
-                isMostPopularDisplayed = false;
+                isCurrentlyDisplayed = 1;
+                return true;
+            case R.id.action_favorites:
+                if (!favoritesArrayList.isEmpty()) {
+                    moviesAdapter.addAll(favoritesArrayList);
+                } else {
+                    loadFavoritesFromDatabase();
+                }
+                isCurrentlyDisplayed = 2;
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void loadFavoritesFromDatabase() {
+        Cursor cursor = getContentResolver().query(Favorites.CONTENT_URI,
+                null, null, null, null);
+
+        if (cursor != null) {
+            if (cursor.moveToNext()) {
+                do {
+                    int movieId = cursor.getInt(cursor.getColumnIndex(Favorites.COLUMN_MOVIE_ID));
+                    String title = cursor.getString(cursor.getColumnIndex(Favorites.COLUMN_TITLE));
+                    String posterPath = cursor.getString(cursor.getColumnIndex(Favorites.COLUMN_POSTER_PATH));
+                    String overview = cursor.getString(cursor.getColumnIndex(Favorites.COLUMN_OVERVIEW));
+                    String releaseDate = cursor.getString(cursor.getColumnIndex(Favorites.COLUMN_RELEASE_DATE));
+                    String voteAverage = cursor.getString(cursor.getColumnIndex(Favorites.COLUMN_VOTE_AVERAGE));
+
+                    MovieMainModel movieMainModel = MovieMainModel.builder()
+                            .setId(movieId)
+                            .setTitle(title)
+                            .setPosterPath(posterPath)
+                            .setOverview(overview)
+                            .setReleaseDate(releaseDate)
+                            .setVoteAverage(voteAverage)
+                            .build();
+
+                    favoritesArrayList.add(movieMainModel);
+
+                } while (cursor.moveToNext());
+            }
+            cursor.close();
+            moviesAdapter.addAll(favoritesArrayList);
+        }
+
     }
 
     /**
@@ -166,6 +204,22 @@ public class MainActivity extends BaseActivity {
         Intent intent = new Intent(this, DetailsActivity.class);
         intent.putExtra(INTENT_MOVIE, event.getMovieModel());
         startActivity(intent);
+    }
+
+    private void executeMostPopularService() {
+        apiServices.getMostPopular(Constants.API_KEY).enqueue(new Callback<MoviesResponse>() {
+            @Override
+            public void onResponse(Call<MoviesResponse> call, Response<MoviesResponse> response) {
+                if (response.isSuccessful()) {
+                    showMostPopularMovies(Arrays.asList(response.body().getResults()));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<MoviesResponse> call, Throwable t) {
+
+            }
+        });
     }
 
     private void executeTopRatedService() {
