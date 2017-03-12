@@ -64,6 +64,7 @@ public class DetailsActivity extends BaseActivity {
     @BindView(R.id.iv_details_backdrop) ImageView ivPoster;
     @BindView(R.id.collapsing_toolbar) CollapsingToolbarLayout collapsingToolbar;
     @BindView(R.id.rv_details_video_list) RecyclerView rvVideoList;
+    @BindView(R.id.rv_details_reviews_list) RecyclerView rvReviewsList;
     @BindView(R.id.fab_details_add_favorite) FloatingActionButton fabAddFavorite;
 
     OkHttpClient okHttpClient;
@@ -220,6 +221,14 @@ public class DetailsActivity extends BaseActivity {
     }
 
     private void setVideosAdapter() {
+        videosAdapter.addAll(videoListDataset.videoList());
+
+        linearLayoutManager = new LinearLayoutManager(this);
+        rvVideoList.setLayoutManager(linearLayoutManager);
+        rvVideoList.setAdapter(videosAdapter);
+    }
+
+    private void setReviewsAdapter() {
         videosAdapter.addAll(videoListDataset.videoList());
 
         linearLayoutManager = new LinearLayoutManager(this);

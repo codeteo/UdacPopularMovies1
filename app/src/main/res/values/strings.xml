@@ -19,6 +19,7 @@
     <string name="details_release_year">Release Date : </string>
     <string name="details_overview">Overview </string>
     <string name="details_videos">Videos </string>
+    <string name="details_reviews">Reviews </string>
     <!-- Details screen end-->
 
     <string name="load_favorites_label">LoadFavoritesService</string>
