@@ -11,6 +11,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -20,6 +21,7 @@ import com.squareup.otto.Subscribe;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -27,10 +29,12 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
+import pop.moviesdb.popularmoviesudacity.adapter.ReviewsAdapter;
 import pop.moviesdb.popularmoviesudacity.adapter.VideosAdapter;
 import pop.moviesdb.popularmoviesudacity.data.MoviesDataSource;
 import pop.moviesdb.popularmoviesudacity.events.OpenYoutubeVideoEvent;
 import pop.moviesdb.popularmoviesudacity.models.MovieMainModel;
+import pop.moviesdb.popularmoviesudacity.models.ReviewsDatasetModel;
 import pop.moviesdb.popularmoviesudacity.models.ReviewsNestedItemResult;
 import pop.moviesdb.popularmoviesudacity.models.ReviewsResponse;
 import pop.moviesdb.popularmoviesudacity.models.VideoDatasetModel;
@@ -53,7 +57,8 @@ public class DetailsActivity extends BaseActivity {
     private static final String TAG = "DETAILS-ACTIVITY";
     private static final String INTENT_MOVIE = "movie";
     private static final String KEY_MOVIE = "movie_key";
-    private static final String KEY_VIDEOS = "video_key";
+    private static final String KEY_VIDEOS = "videos_key";
+    private static final String KEY_REVIEWS = "reviews_key";
     private static final long CONNECTION_TIMEOUT = 15;
     private static final String YOUTUBE_BASE_URL = "http://www.youtube.com/watch?v=";
 
@@ -75,9 +80,12 @@ public class DetailsActivity extends BaseActivity {
 
     private List<VideoMainModel> videoList = new ArrayList<>();
     private VideoDatasetModel videoListDataset;
-    private List<ReviewsNestedItemResult> reviewsList;
+    private List<ReviewsNestedItemResult> reviewsList = new ArrayList<>();
+    private ReviewsDatasetModel reviewsListDataset;
     private VideosAdapter videosAdapter;
+    private ReviewsAdapter reviewsAdapter;
     private LinearLayoutManager linearLayoutManager;
+    private LinearLayoutManager reviewLinearLayoutManager;
 
     private MoviesDataSource moviesDataSource;
     private boolean isFavorite = false;
@@ -96,6 +104,7 @@ public class DetailsActivity extends BaseActivity {
         apiServices = retrofit.create(MoviesApiServices.class);
 
         videosAdapter = new VideosAdapter(this);
+        reviewsAdapter = new ReviewsAdapter(this);
 
         if (savedInstanceState == null) {
             movieModel = getIntent().getParcelableExtra(INTENT_MOVIE);
@@ -106,10 +115,17 @@ public class DetailsActivity extends BaseActivity {
         } else {
             movieModel = savedInstanceState.getParcelable(KEY_MOVIE);
             videoListDataset = savedInstanceState.getParcelable(KEY_VIDEOS);
+            reviewsListDataset = savedInstanceState.getParcelable(KEY_REVIEWS);
+
             if (videoListDataset == null) {
                 executeVideoRequest();
             } else {
                 setVideosAdapter();
+            }
+            if (reviewsListDataset == null) {
+                executeReviewRequest();
+            } else {
+                setReviewsAdapter();
             }
         }
 
@@ -175,11 +191,15 @@ public class DetailsActivity extends BaseActivity {
             @Override
             public void onResponse(Call<ReviewsResponse> call, Response<ReviewsResponse> response) {
                 if (response.isSuccessful()) {
-                    for (ReviewsNestedItemResult result : response.body().getResults()) {
-                        reviewsList.add(result);
-                    }
-
+                    Collections.addAll(reviewsList, response.body().getResults());
                 }
+
+                reviewsListDataset = ReviewsDatasetModel.builder()
+                        .setReviewsList(reviewsList)
+                        .build();
+
+                setReviewsAdapter();
+
             }
 
             @Override
@@ -229,11 +249,11 @@ public class DetailsActivity extends BaseActivity {
     }
 
     private void setReviewsAdapter() {
-        videosAdapter.addAll(videoListDataset.videoList());
+        reviewsAdapter.addAll(reviewsListDataset.reviewsList());
 
-        linearLayoutManager = new LinearLayoutManager(this);
-        rvVideoList.setLayoutManager(linearLayoutManager);
-        rvVideoList.setAdapter(videosAdapter);
+        reviewLinearLayoutManager = new LinearLayoutManager(this);
+        rvReviewsList.setLayoutManager(reviewLinearLayoutManager);
+        rvReviewsList.setAdapter(reviewsAdapter);
     }
 
     @Subscribe
@@ -248,6 +268,7 @@ public class DetailsActivity extends BaseActivity {
         super.onSaveInstanceState(outState);
         outState.putParcelable(KEY_MOVIE, movieModel);
         outState.putParcelable(KEY_VIDEOS, videoListDataset);
+        outState.putParcelable(KEY_REVIEWS, reviewsListDataset);
     }
 
     @Override

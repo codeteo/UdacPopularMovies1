@@ -1,35 +1,47 @@
 package pop.moviesdb.popularmoviesudacity.models;
 
-import android.os.Parcelable;
-
-import com.google.auto.value.AutoValue;
+import java.io.Serializable;
 
 /**
  * Main model class to hold Review data in {@link pop.moviesdb.popularmoviesudacity.DetailsActivity}
  */
 
-@AutoValue
-public abstract class ReviewsNestedItemResult implements Parcelable {
+public class ReviewsNestedItemResult implements Serializable {
 
-    public abstract String id();
-    public abstract String author();
-    public abstract String content();
-    public abstract String url();
+    public String id;
+    public String author;
+    public String content;
+    public String url;
 
-    public static ReviewsNestedItemResult.Builder builder() {
-        return new AutoValue_ReviewsNestedItemResult.Builder();
+    public String getId() {
+        return id;
     }
 
-    @AutoValue.Builder
-    public static abstract class Builder {
-
-        public abstract Builder setId(String id);
-        public abstract Builder setAuthor(String author);
-        public abstract Builder setContent(String content);
-        public abstract Builder setUrl(String url);
-
-        public abstract ReviewsNestedItemResult build();
-
+    public void setId(String id) {
+        this.id = id;
     }
 
+    public String getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(String author) {
+        this.author = author;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
 }
