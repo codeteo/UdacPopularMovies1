@@ -16,7 +16,7 @@ import static pop.moviesdb.popularmoviesudacity.data.MoviesContract.*;
 public class MoviesDbHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "movies.db";
-    private static final int DATABASE_VERSION = 5;
+    private static final int DATABASE_VERSION = 6;
 
     public MoviesDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -29,7 +29,11 @@ public class MoviesDbHelper extends SQLiteOpenHelper {
                 Favorites.TABLE_NAME + " (" +
                 _ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
                 Favorites.COLUMN_MOVIE_ID + " INTEGER NOT NULL," +
-                Favorites.COLUMN_TITLE + " TEXT NOT NULL" +
+                Favorites.COLUMN_TITLE + " TEXT NOT NULL," +
+                Favorites.COLUMN_POSTER_PATH + " TEXT NOT NULL," +
+                Favorites.COLUMN_OVERVIEW+ " TEXT NOT NULL," +
+                Favorites.COLUMN_VOTE_AVERAGE + " TEXT NOT NULL," +
+                Favorites.COLUMN_RELEASE_DATE + " TEXT NOT NULL" +
                 ");";
 
         sqLiteDatabase.execSQL(SQL_CREATE_FAVORITES_TABLE);

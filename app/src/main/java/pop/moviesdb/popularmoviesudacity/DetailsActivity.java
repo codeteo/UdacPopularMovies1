@@ -131,11 +131,19 @@ public class DetailsActivity extends BaseActivity {
             public void onClick(View view) {
                 int id = movieModel.id();
                 String title = movieModel.title();
+                String posterPath = movieModel.posterPath();
+                String overview = movieModel.overview();
+                String voteAverage = movieModel.voteAverage();
+                String releaseDate = movieModel.releaseDate();
 
                 ContentValues contentValues = new ContentValues();
 
                 contentValues.put(Favorites.COLUMN_MOVIE_ID, id);
                 contentValues.put(Favorites.COLUMN_TITLE, title);
+                contentValues.put(Favorites.COLUMN_POSTER_PATH, posterPath);
+                contentValues.put(Favorites.COLUMN_OVERVIEW, overview);
+                contentValues.put(Favorites.COLUMN_VOTE_AVERAGE, voteAverage);
+                contentValues.put(Favorites.COLUMN_RELEASE_DATE, releaseDate);
 
                 isFavorite = !isFavorite;
 
