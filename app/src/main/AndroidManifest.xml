@@ -15,6 +15,8 @@
 
         <activity android:name=".DetailsActivity"/>
 
+        <service android:name=".network.LoadFavoritesIntentService" android:label="@string/load_favorites_label" />
+
         <provider
             android:authorities="@string/content_authority"
             android:name=".data.MoviesContentProvider"

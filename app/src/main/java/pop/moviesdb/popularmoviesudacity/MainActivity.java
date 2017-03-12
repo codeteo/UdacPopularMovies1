@@ -22,11 +22,12 @@ import butterknife.ButterKnife;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import pop.moviesdb.popularmoviesudacity.adapter.MoviesAdapter;
-import pop.moviesdb.popularmoviesudacity.data.MoviesDataSource;
+import pop.moviesdb.popularmoviesudacity.events.LoadFavoritesFinishedEvent;
 import pop.moviesdb.popularmoviesudacity.events.OpenDetailsActivityEvent;
 import pop.moviesdb.popularmoviesudacity.models.MovieMainModel;
 import pop.moviesdb.popularmoviesudacity.models.MoviesNestedItemResultsResponse;
 import pop.moviesdb.popularmoviesudacity.models.MoviesResponse;
+import pop.moviesdb.popularmoviesudacity.network.LoadFavoritesIntentService;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -162,8 +163,13 @@ public class MainActivity extends BaseActivity {
     }
 
     private void loadFavoritesFromDatabase() {
-        MoviesDataSource moviesDataSource = new MoviesDataSource(this);
-        favoritesArrayList = moviesDataSource.getFavorites();
+        Intent intent = new Intent(this, LoadFavoritesIntentService.class);
+        startService(intent);
+    }
+
+    @Subscribe
+    public void onLoadFavoritesFinishedEventReceived(LoadFavoritesFinishedEvent event) {
+        favoritesArrayList = event.getFavoritesArrayList();
         moviesAdapter.addAll(favoritesArrayList);
     }
 

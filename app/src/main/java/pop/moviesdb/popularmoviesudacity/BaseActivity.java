@@ -5,7 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import pop.moviesdb.popularmoviesudacity.events.BusProvider;
 
 /**
- * Created by css on 2/2/17.
+ * Base class for Activities, contains basic common functionality.
  */
 public class BaseActivity extends AppCompatActivity {
 

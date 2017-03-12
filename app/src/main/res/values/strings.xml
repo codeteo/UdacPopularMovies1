@@ -21,4 +21,6 @@
     <string name="details_videos">Videos </string>
     <!-- Details screen end-->
 
+    <string name="load_favorites_label">LoadFavoritesService</string>
+
 </resources>
