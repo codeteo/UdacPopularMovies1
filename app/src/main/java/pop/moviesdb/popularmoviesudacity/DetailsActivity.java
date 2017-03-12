@@ -31,6 +31,8 @@ import pop.moviesdb.popularmoviesudacity.adapter.VideosAdapter;
 import pop.moviesdb.popularmoviesudacity.data.MoviesDataSource;
 import pop.moviesdb.popularmoviesudacity.events.OpenYoutubeVideoEvent;
 import pop.moviesdb.popularmoviesudacity.models.MovieMainModel;
+import pop.moviesdb.popularmoviesudacity.models.ReviewsNestedItemResult;
+import pop.moviesdb.popularmoviesudacity.models.ReviewsResponse;
 import pop.moviesdb.popularmoviesudacity.models.VideoDatasetModel;
 import pop.moviesdb.popularmoviesudacity.models.VideoMainModel;
 import pop.moviesdb.popularmoviesudacity.models.VideosNestedItemResultsResponse;
@@ -72,6 +74,7 @@ public class DetailsActivity extends BaseActivity {
 
     private List<VideoMainModel> videoList = new ArrayList<>();
     private VideoDatasetModel videoListDataset;
+    private List<ReviewsNestedItemResult> reviewsList;
     private VideosAdapter videosAdapter;
     private LinearLayoutManager linearLayoutManager;
 
@@ -97,6 +100,7 @@ public class DetailsActivity extends BaseActivity {
             movieModel = getIntent().getParcelableExtra(INTENT_MOVIE);
 
             executeVideoRequest();
+            executeReviewRequest();
 
         } else {
             movieModel = savedInstanceState.getParcelable(KEY_MOVIE);
@@ -163,6 +167,25 @@ public class DetailsActivity extends BaseActivity {
             }
         });
 
+    }
+
+    private void executeReviewRequest() {
+        apiServices.getReviews(movieModel.id(), Constants.API_KEY).enqueue(new Callback<ReviewsResponse>() {
+            @Override
+            public void onResponse(Call<ReviewsResponse> call, Response<ReviewsResponse> response) {
+                if (response.isSuccessful()) {
+                    for (ReviewsNestedItemResult result : response.body().getResults()) {
+                        reviewsList.add(result);
+                    }
+
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ReviewsResponse> call, Throwable t) {
+
+            }
+        });
     }
 
     private void executeVideoRequest() {

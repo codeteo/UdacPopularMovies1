@@ -1,6 +1,7 @@
 package pop.moviesdb.popularmoviesudacity;
 
 import pop.moviesdb.popularmoviesudacity.models.MoviesResponse;
+import pop.moviesdb.popularmoviesudacity.models.ReviewsResponse;
 import pop.moviesdb.popularmoviesudacity.models.VideosResponse;
 import retrofit2.Call;
 import retrofit2.http.GET;
@@ -22,6 +23,6 @@ public interface MoviesApiServices {
     Call<VideosResponse> getVideos(@Path("id") int movieId, @Query("api_key") String apiKey);
 
     @GET("movie/{id}/reviews")
-    Call<Void> getReviews(@Path("id") int movieId, @Query("api_key") String apiKey);
+    Call<ReviewsResponse> getReviews(@Path("id") int movieId, @Query("api_key") String apiKey);
 
 }
