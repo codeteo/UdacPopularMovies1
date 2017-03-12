@@ -1,5 +1,6 @@
 package pop.moviesdb.popularmoviesudacity.data;
 
+import android.content.ContentUris;
 import android.net.Uri;
 import android.provider.BaseColumns;
 
@@ -24,6 +25,13 @@ public class MoviesContract {
         public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon()
                 .appendPath(PATH_FAVORITE)
                 .build();
+
+        /**
+         * Builds Uri for single movie items
+         */
+        public static Uri buildMovieUri(long id) {
+            return ContentUris.withAppendedId(Favorites.CONTENT_URI, id);
+        }
 
         public static final String TABLE_NAME = "favorites";
         public static final String COLUMN_MOVIE_ID = "movie_id";

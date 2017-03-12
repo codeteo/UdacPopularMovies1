@@ -2,7 +2,6 @@ package pop.moviesdb.popularmoviesudacity.data;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.util.Log;
 
 import pop.moviesdb.popularmoviesudacity.models.MovieMainModel;
 
@@ -22,10 +21,9 @@ public class MoviesDataSource {
 
     public boolean isFavorite(MovieMainModel movie) {
         boolean isFavorite = false;
-        Log.i("DataSource", "movieID == " + movie.id());
 
         Cursor cursor = context.getContentResolver().query(
-                Favorites.CONTENT_URI,
+                Favorites.buildMovieUri(movie.id()),
                 null,
                 Favorites.COLUMN_MOVIE_ID + "=?",
                 new String[]{String.valueOf(movie.id())},
@@ -36,8 +34,6 @@ public class MoviesDataSource {
             isFavorite = cursor.getCount() != 0;
             cursor.close();
         }
-
-        Log.i("DataSource", "isFavorite : " + isFavorite);
 
         return isFavorite;
     }
