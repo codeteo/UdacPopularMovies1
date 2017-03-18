@@ -46,7 +46,7 @@ public class ReviewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
         final VideosViewHolder videosViewHolder = (VideosViewHolder) holder;
 
-        videosViewHolder.tvAuthor.setText(dataset.get(position).getAuthor());
+        videosViewHolder.tvAuthor.setText(String.format("Author : %s", dataset.get(position).getAuthor()));
         videosViewHolder.tvContent.setText(dataset.get(position).getContent());
 
     }

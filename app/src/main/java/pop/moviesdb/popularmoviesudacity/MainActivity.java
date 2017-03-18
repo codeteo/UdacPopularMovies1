@@ -6,7 +6,6 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -42,7 +41,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
  * or <i>"top rated"</i> movies.
  * Data are saved to an ArrayList of Parcelable objects with the use of Google's AutoValue library
  * and AutoValue extensions that help to easily create immutable objects that implement Parcelable interface
- * without the boileplate.
+ * without the boilerplate.
  */
 public class MainActivity extends BaseActivity {
 
@@ -52,7 +51,10 @@ public class MainActivity extends BaseActivity {
     private static final String FAVORITES_KEY = "favorites";
     private static final String CURRENTLY_DISPLAYED_KEY = "currently_displayed";
     private static final String INTENT_MOVIE = "movie";
+    private static final String INTENT_IS_FAVORITE = "is_favorite";
+    private static final String INTENT_REFRESH_FAVORITE_LIST = "refresh_favorite";
     private static final long CONNECTION_TIMEOUT = 15;
+    private static final int REQUEST_CODE = 1;
 
     @BindView(R.id.rv_main_movies_list) RecyclerView rvMoviesList;
     @BindView(R.id.toolbar) Toolbar toolbar;
@@ -98,7 +100,6 @@ public class MainActivity extends BaseActivity {
             executeMostPopularService();
 
         } else {
-            Log.i(TAG, "onCreate State is NOT NULL");
             mostPopularArrayList = savedInstanceState.getParcelableArrayList(MOST_POPULAR_KEY);
             topRatedArrayList = savedInstanceState.getParcelableArrayList(TOP_RATED_KEY);
             favoritesArrayList = savedInstanceState.getParcelableArrayList(FAVORITES_KEY);
@@ -112,6 +113,23 @@ public class MainActivity extends BaseActivity {
                 moviesAdapter.addAll(topRatedArrayList);
             } else {
                 moviesAdapter.addAll(favoritesArrayList);
+            }
+        }
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if (requestCode == REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                boolean isDeleted = data.getBooleanExtra(INTENT_REFRESH_FAVORITE_LIST, false);
+                if (isDeleted) {
+                    // clear and re-query DB
+                    favoritesArrayList.clear();
+                    moviesAdapter.notifyDataSetChanged();
+                    loadFavoritesFromDatabase();
+                }
             }
         }
 
@@ -181,7 +199,8 @@ public class MainActivity extends BaseActivity {
     public void onOpenDetailsActivityEventReceived(OpenDetailsActivityEvent event) {
         Intent intent = new Intent(this, DetailsActivity.class);
         intent.putExtra(INTENT_MOVIE, event.getMovieModel());
-        startActivity(intent);
+        intent.putExtra(INTENT_IS_FAVORITE, isCurrentlyDisplayed == 2);
+        startActivityForResult(intent, REQUEST_CODE);
     }
 
     private void executeMostPopularService() {

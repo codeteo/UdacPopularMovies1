@@ -11,7 +11,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -56,11 +55,16 @@ public class DetailsActivity extends BaseActivity {
 
     private static final String TAG = "DETAILS-ACTIVITY";
     private static final String INTENT_MOVIE = "movie";
+    private static final String INTENT_IS_FAVORITE = "is_favorite";
+    private static final String INTENT_REFRESH_FAVORITE_LIST = "refresh_favorite";
     private static final String KEY_MOVIE = "movie_key";
     private static final String KEY_VIDEOS = "videos_key";
     private static final String KEY_REVIEWS = "reviews_key";
+    private static final String KEY_REMOVED_FROM_DB = "removed_from_db";
+    private static final String KEY_ENTERED_FROM_FAV_GRID = "entered_from_fav_grid";
     private static final long CONNECTION_TIMEOUT = 15;
     private static final String YOUTUBE_BASE_URL = "http://www.youtube.com/watch?v=";
+
 
     @BindView(R.id.tb_details_toolbar) Toolbar toolbar;
     @BindView(R.id.tv_details_overview) TextView tvOverview;
@@ -89,6 +93,9 @@ public class DetailsActivity extends BaseActivity {
 
     private MoviesDataSource moviesDataSource;
     private boolean isFavorite = false;
+    // Declares whether we opened this Activity from the grid of favorite movies
+    private boolean isEnteredFromFavoriteGrid = false;
+    private boolean isFavoriteRemovedFromDB = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -108,6 +115,7 @@ public class DetailsActivity extends BaseActivity {
 
         if (savedInstanceState == null) {
             movieModel = getIntent().getParcelableExtra(INTENT_MOVIE);
+            isEnteredFromFavoriteGrid = getIntent().getBooleanExtra(INTENT_IS_FAVORITE, false);
 
             executeVideoRequest();
             executeReviewRequest();
@@ -116,6 +124,8 @@ public class DetailsActivity extends BaseActivity {
             movieModel = savedInstanceState.getParcelable(KEY_MOVIE);
             videoListDataset = savedInstanceState.getParcelable(KEY_VIDEOS);
             reviewsListDataset = savedInstanceState.getParcelable(KEY_REVIEWS);
+            isEnteredFromFavoriteGrid = savedInstanceState.getBoolean(KEY_ENTERED_FROM_FAV_GRID);
+            isFavoriteRemovedFromDB = savedInstanceState.getBoolean(KEY_REMOVED_FROM_DB);
 
             if (videoListDataset == null) {
                 executeVideoRequest();
@@ -178,12 +188,19 @@ public class DetailsActivity extends BaseActivity {
                             null, new String[]{Favorites.COLUMN_MOVIE_ID + "=" + id});
                     if (rowsDeleted > 0) {
                         fabAddFavorite.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.white)));
+                        isFavoriteRemovedFromDB = true;
                     }
                 }
 
             }
         });
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        finishActivity();
+        super.onBackPressed();
     }
 
     private void executeReviewRequest() {
@@ -269,16 +286,30 @@ public class DetailsActivity extends BaseActivity {
         outState.putParcelable(KEY_MOVIE, movieModel);
         outState.putParcelable(KEY_VIDEOS, videoListDataset);
         outState.putParcelable(KEY_REVIEWS, reviewsListDataset);
+        outState.putBoolean(KEY_ENTERED_FROM_FAV_GRID, isEnteredFromFavoriteGrid);
+        outState.putBoolean(KEY_REMOVED_FROM_DB, isFavoriteRemovedFromDB);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home :
-                finish();
+                finishActivity();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    /* Finishes Activity and if DetailsActivity started from favorite lists adds some Extras  */
+    private void finishActivity() {
+        if (isEnteredFromFavoriteGrid) {
+            Intent intent = new Intent();
+            intent.putExtra(INTENT_REFRESH_FAVORITE_LIST, isFavoriteRemovedFromDB);
+            setResult(RESULT_OK, intent);
+            finish();
+        } else {
+            finish();
         }
     }
 
