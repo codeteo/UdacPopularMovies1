@@ -129,7 +129,7 @@ public class MoviesContentProvider extends ContentProvider {
     public int delete(@NonNull Uri uri, String selection, String[] selectionArgs) {
         SQLiteDatabase db = moviesDbHelper.getWritableDatabase();
 
-        int rowsDeleted = 0;
+        int rowsDeleted;
 
         switch (uriMatcher.match(uri)) {
             case FAVORITES_WITH_ID :

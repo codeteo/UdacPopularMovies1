@@ -59,16 +59,16 @@ public class MainActivity extends BaseActivity {
     @BindView(R.id.rv_main_movies_list) RecyclerView rvMoviesList;
     @BindView(R.id.toolbar) Toolbar toolbar;
 
-    OkHttpClient okHttpClient;
-    Retrofit retrofit;
-    MoviesApiServices apiServices;
+    private OkHttpClient okHttpClient;
+    private Retrofit retrofit;
+    private MoviesApiServices apiServices;
 
-    MoviesAdapter moviesAdapter;
-    GridLayoutManager gridLayoutManager;
+    private MoviesAdapter moviesAdapter;
+    private GridLayoutManager gridLayoutManager;
 
-    ArrayList<MovieMainModel> mostPopularArrayList = new ArrayList<>();
-    ArrayList<MovieMainModel> topRatedArrayList = new ArrayList<>();
-    ArrayList<MovieMainModel> favoritesArrayList = new ArrayList<>();
+    private ArrayList<MovieMainModel> mostPopularArrayList = new ArrayList<>();
+    private ArrayList<MovieMainModel> topRatedArrayList = new ArrayList<>();
+    private ArrayList<MovieMainModel> favoritesArrayList = new ArrayList<>();
 
     // keeps state of currently displayed data, initially we display "Most Popular"
     // 0 for MostPopular, 1 for TopRated and 2 for favorites

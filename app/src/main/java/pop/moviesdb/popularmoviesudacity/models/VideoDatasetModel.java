@@ -7,7 +7,8 @@ import com.google.auto.value.AutoValue;
 import java.util.List;
 
 /**
- * Created by css on 3/2/17.
+ * Model to store dataset of Videos {@link VideoMainModel}
+ * for {@link pop.moviesdb.popularmoviesudacity.DetailsActivity}
  */
 @AutoValue
 public abstract class VideoDatasetModel implements Parcelable{

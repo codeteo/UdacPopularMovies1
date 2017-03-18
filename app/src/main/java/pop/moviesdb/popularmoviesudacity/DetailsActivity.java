@@ -76,11 +76,11 @@ public class DetailsActivity extends BaseActivity {
     @BindView(R.id.rv_details_reviews_list) RecyclerView rvReviewsList;
     @BindView(R.id.fab_details_add_favorite) FloatingActionButton fabAddFavorite;
 
-    OkHttpClient okHttpClient;
-    Retrofit retrofit;
-    MoviesApiServices apiServices;
+    private OkHttpClient okHttpClient;
+    private Retrofit retrofit;
+    private MoviesApiServices apiServices;
 
-    MovieMainModel movieModel;
+    private MovieMainModel movieModel;
 
     private List<VideoMainModel> videoList = new ArrayList<>();
     private VideoDatasetModel videoListDataset;
